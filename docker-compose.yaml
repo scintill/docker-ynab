@@ -1,0 +1,27 @@
+# installation:
+# sudo docker-compose run --entrypoint '/usr/bin/entrypoint /bin/bash' ynab
+# winetricks allfonts (failed early due to missing xz in container, but seems to have helped with font issue)
+# wine ~/ynab-setup.exe
+version: '3.0'
+services:
+    ynab:
+        image: scottyhardy/docker-wine@sha256:ca0481f5c953cbb9c40ce6e91c01f9bf06ea7de73094663f13931778f1060a58
+        environment:
+            - DISPLAY
+            - WINEARCH=win32
+        volumes:
+            - ynab-appinst:/home/wineuser
+            - ynab-data:/home/wineuser/Budget
+            - ~/.Xauthority:/root/.Xauthority
+            - ./YNAB 4_4.3.857_Setup.exe:/home/wineuser/ynab-setup.exe
+            - ./lic.txt:/home/wineuser/ynab-lic.txt
+        entrypoint:
+            - /usr/bin/entrypoint
+            - wine
+            - C:\Program Files\YNAB 4\YNAB 4.exe
+        stdin_open: true
+        tty: true
+        network_mode: host
+volumes:
+    ynab-appinst:
+    ynab-data:
