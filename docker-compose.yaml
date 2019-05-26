@@ -5,42 +5,37 @@
 version: '3.7'
 services:
     ynab:
-        build: .
+        image: scottyhardy/docker-wine@sha256:ca0481f5c953cbb9c40ce6e91c01f9bf06ea7de73094663f13931778f1060a58
         environment:
-            - DISPLAY=xvncserver:0
+            - DISPLAY=novnc:0
             - WINEARCH=win32
         volumes:
             - ynab-appinst:/home/wineuser
             - ynab-data:/home/wineuser/Budget
-            - ynab-xauthority:/Xauthority
             - ./YNAB 4_4.3.857_Setup.exe:/home/wineuser/ynab-setup.exe
             - ./lic.txt:/home/wineuser/ynab-lic.txt
+        # XXX sleep is a hack to wait for server to be ready
         entrypoint:
             - bash
             - -c
             - sleep 5; /usr/bin/entrypoint wine "C:\\Program Files\\YNAB 4\\YNAB 4.exe"
         networks:
-            - ynab-xvncserver
+            - x11
         # XXX why does it even require IPC for a remote X server?!! well, I can give it...
-        ipc: container:docker-ynab_xvncserver_1
+        ipc: container:docker-ynab_novnc_1
         stdin_open: true
         tty: true
         depends_on:
-            - xvncserver
-    xvncserver:
-        image: suchja/x11server@sha256:0737c737e6e1a79bfe0fad30b58bc2c9a5f8d637b2f61603c89ca8d87a2a7a06
-        environment:
-            - VNC_PASSWORD
-        volumes:
-            - ynab-xauthority:/Xauthority
+            - novnc
+    novnc:
+        image: theasp/novnc@sha256:7d57a01c49c27e0ac643afdb4cce80eaca7e63282fa7b13568a7388e30635575
         networks:
-            - ynab-xvncserver
+            - x11
         ports:
-            - 5900:5900
+            - 8080:8080
         ipc: shareable
 volumes:
     ynab-appinst:
     ynab-data:
-    ynab-xauthority:
 networks:
-    ynab-xvncserver:
+    x11:
