@@ -5,8 +5,10 @@ services:
         # ^^^ take https://gist.github.com/scintill/199c47a32a48cf52c9e415624715ccbc , run ynab installer (set XAUTHORITY=/home/wineuser/.Xauthority), set up license key, commit image
         environment:
             - DISPLAY=novnc:0
+            - WINEDEBUG=fixme-all
         volumes:
-            - ynab-data:/home/wineuser2/Budget
+            - ynab-data:/home/wineuser2/YNAB
+            - /etc/localtime:/etc/localtime:ro
         # XXX sleep is a hack to wait for server to be ready
         entrypoint:
             - bash
@@ -16,8 +18,6 @@ services:
             - x11
         # XXX why does it even require IPC for a remote X server?!! well, I can give it...
         ipc: container:docker-ynab_novnc_1
-        stdin_open: true
-        tty: true
         depends_on:
             - novnc
     novnc:
