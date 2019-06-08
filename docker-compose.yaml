@@ -1,8 +1,8 @@
 version: '3.7'
 services:
     ynab:
-        image: sha256:a0a599e5108e58806e8cf35b09bf1938c1c3f36585eb585d509874ef3eeef67d
-        # ^^^ take https://gist.github.com/scintill/199c47a32a48cf52c9e415624715ccbc , run ynab installer (set XAUTHORITY=/home/wineuser/.Xauthority), set up license key, commit image
+        image: sha256:a0f448c9b7f62f99e31af7d6b6bd326de029d4e7e0a06dae50708465796b5c64
+        # ^^^ take https://gist.github.com/scintill/199c47a32a48cf52c9e415624715ccbc , run `sudo docker run -it -v ~/.Xauthority:/root/.Xauthority -v ~/'YNAB 4_4.3.857_Setup.exe':/home/wineuser2/ynab-setup.exe -e DISPLAY --net=host ac68a8e84ef0 sh -c 'env XAUTHORITY=/home/wineuser/.Xauthority wine /home/wineuser2/ynab-setup.exe ; sleep 10000`, set up license key, commit image
         environment:
             - DISPLAY=novnc:0
             - WINEDEBUG=fixme-all
@@ -13,7 +13,7 @@ services:
         entrypoint:
             - bash
             - -c
-            - sleep 3; /usr/bin/entrypoint wine "C:\\Program Files\\YNAB 4\\YNAB 4.exe"
+            - sleep 5; /usr/bin/entrypoint wine "C:\\Program Files\\YNAB 4\\YNAB 4.exe"
         networks:
             - x11
         # XXX why does it even require IPC for a remote X server?!! well, I can give it...
@@ -25,7 +25,7 @@ services:
         networks:
             - x11
         ports:
-            - 8080:8080
+            - 0.0.0.0:80:8080
         ipc: shareable
         environment:
             - RUN_XTERM=no
